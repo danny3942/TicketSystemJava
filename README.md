@@ -3,6 +3,7 @@
 Matthew Moses, Owner of Moses computer repair, who is also a good friend of mine just created a website. It has contact info, a mission statement and, some basic service info.
 Matthew came to me with a big problem. “I have a website with my service but, customers are unable to communicate with the company through the website ”. I want to solve this by creating a web app that users can sign up, login and add a work order request. 
 I plan on using java/spring/thymeleaf/hibernate to implement my solution. Users will have a form for adding a work order which will include: the type of computer they need to work on(Laptop, Desktop). Operating System (Windows, Linux, Mac). serial number for their computer. And a brief description of the problem they are having.
+Admins will be able to view all work requests, view and change the work orders status and view and update user permissions. Once an admin changes a status to done a user will see that their computer is done and then can confirm it is fixed and with that. The request will be deleted.
 # Features
 # ------ User Sign Up -------
 This application will allow customers to signup and login. It will also allow Admin users to login pulling from a seprete database. The first Admin will be the owner Matthew and he will be the only one that can allow ValidUsers to become Admins. 
