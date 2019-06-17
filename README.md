@@ -1,5 +1,5 @@
 # TicketSystemJava
-# Overview
+# Overview/Elevator Pitch
 Matthew Moses, Owner of Moses computer repair, who is also a good friend of mine just created a website. It has contact info, a mission statement and, some basic service info.
 Matthew came to me with a big problem. “I have a website with my service but, customers are unable to communicate with the company through the website ”. I want to solve this by creating a web app that users can sign up, login and add a work order request. 
 I plan on using java/spring/thymeleaf/hibernate to implement my solution. Users will have a form for adding a work order which will include: the type of computer they need to work on(Laptop, Desktop). Operating System (Windows, Linux, Mac). serial number for their computer. And a brief description of the problem they are having.
@@ -20,4 +20,4 @@ Once logged in Admins will see new tickets and new users. They can navigate to a
 * Ampps
 * PhpMyAdmin
 # Breaking new ground
-For this project I will have to create a secure server for users to login. I will have to read up on the docs for password hasing in java and tinker around, see what works for this project. I am going to have to re-fresh my memory on sorting lists and searching through lists. This will test my ability to keepo track of a large project and teach me how to communicate with a customer about what they would like from the application. This will be my first time creating an application with a REAL user in mind.
+For this project I will have to create a secure server for users to login. I will have to read up on the docs for password hasing in java and tinker around, see what works for this project. I am going to have to re-fresh my memory on sorting lists and searching through lists. This will test my ability to keep track of a large project and teach me how to communicate with a customer about what they would like from the application. This will be my first time creating an application with a REAL user in mind. I will have to rebuild my skills around dynamically shaping webpages for differing devices i.e. phones, tablets, laptops. I also would like to make my project work in Firefox AND chrome which will require me to brush up on my dynamic html based upon the device renderering the html.
