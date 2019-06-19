@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<div class="container">
+    <form method="post" class="form-group" th:object="${user}">
+        <table>
+            <tr>
+                <td><label th:for="*{email}">Email</label></td>
+                <td><input th:field="*{email}" type="email" class="form-control"/></td>
+            </tr>
+            <tr>
+                <td><label th:for="*{passwordHash}">Password</label></td>
+                <td><input th:field="*{passwordHash}" type="password" class="form-control"/></td>
+            </tr>
+            <tr>
+                <td><label th:for="*{verify}">Re-Type Password</label></td>
+                <td><input th:field="*{verify}" type="password" class="form-control"/></td>
+            </tr>
+            <input type="hidden"
+                   name="${_csrf.parameterName}"
+                   value="${_csrf.token}"/>
+            <tr>
+                <td><input type="submit" value="Signup" class="btn btn-primary btn-sm"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>
