@@ -24,10 +24,10 @@
                     <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/signup">Signup</a>
+                    <a th:unless="${foo}" class="nav-link" href="/signup">Signup</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/login">Login</a>
+                    <a th:unless="${foo}" class="nav-link" href="/login">Login</a>
                 </li>
                 <!--<li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -43,8 +43,17 @@
                         <a class="dropdown-item" href="#">Something else here</a>
                     </div>
                 </li>-->
-                <li class="nav-item">
-                    <a class="nav-link disabled">Work In Progress</a>
+                <li th:if="${foo}" class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
+                <li th:if="${foo}" class="nav-item">
+                    <a class="nav-link" th:href="'/work/view-all/' + ${user.getId()}">My Work Requests</a>
+                </li>
+                <li th:if="${foo}" class="nav-item">
+                    <a class="nav-link" href="/work">Work Request</a>
+                </li>
+                <li th:if="${bar}" class="nav-item">
+                    <a class="nav-link" href="/work/view-all-requests">Work Requests</a>
                 </li>
             </ul>
         </div>

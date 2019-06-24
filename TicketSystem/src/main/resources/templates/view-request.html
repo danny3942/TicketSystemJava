@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<table class="table table-bordered">
+    <tr>
+        <td>Computer Type</td><td>Operating System</td><td>Serial Number</td><td>Problem</td><td>Status</td><td>User Email</td>
+    </tr>
+    <tr>
+        <td th:text="${workRequest.getTypeOfComputer()}"></td>
+        <td th:text="${workRequest.getOpSys()}"></td>
+        <td th:text="${workRequest.getSerialNumber()}"></td>
+        <td th:text="${workRequest.getProblem()}"></td>
+        <td th:text="${workRequest.getStatus()}"></td>
+        <td th:text="${workRequest.getUserEmail()}"></td>
+    </tr>
+</table>
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>

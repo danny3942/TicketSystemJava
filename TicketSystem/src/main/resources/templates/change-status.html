@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<table class="table table-bordered">
+    <tr>
+        <td>Computer Type</td><td>Operating System</td><td>Serial Number</td><td>Problem</td><td>Status</td><td>User Email</td>
+    </tr>
+    <tr>
+        <td th:text="${wr.getTypeOfComputer()}"></td>
+        <td th:text="${wr.getOpSys()}"></td>
+        <td th:text="${wr.getSerialNumber()}"></td>
+        <td th:text="${wr.getProblem()}"></td>
+        <td th:text="${wr.getStatus()}"></td>
+        <td th:text="${wr.getUserEmail()}"></td>
+    </tr>
+</table>
+    <form method="post" class="form-group">
+        <label for="status"></label>
+        <select class="form-control col-3" id="status" name="status">
+            <option th:text="${status}" th:value="${status}" th:each="status : ${statuss}"></option>
+        </select>
+        <input class="form-control col-3" type="submit" value="Change Status"/>
+    </form>
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>
