@@ -98,17 +98,20 @@ public class WorkRequestController {
 
     @RequestMapping(value="view-all/{id}")
     @RolesAllowed("ROLE_USER")
-    public String viewMyRequests(Model model, @PathVariable int id){
+    public String viewMyRequests(Model model, @PathVariable int id) {
         Authentication auth = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+        if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
             model.addAttribute("bar", true);
         }
-        model.addAttribute("poop", Status.COMPLETED);
-        model.addAttribute("foo" , true);
-        model.addAttribute("user", userDao.findOne(id));
-        return "view-my-requests";
+        if (userDao.findOne(id).getEmail().equals(auth.getPrincipal().toString())){
+            model.addAttribute("poop", Status.COMPLETED);
+            model.addAttribute("foo", true);
+            model.addAttribute("user", userDao.findOne(id));
+            return "view-my-requests";
+        }
+        return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
     }
 
     @RequestMapping(value="view-all-requests")
@@ -146,6 +149,29 @@ public class WorkRequestController {
 
         workRequestDao.save(wr);
         return "redirect:/work/view-all-requests";
+    }
+
+    @RequestMapping(value="confirm/{id}")
+    public String confirmStatus(Model model, @PathVariable int id){
+        model.addAttribute("workRequest", workRequestDao.findOne(id));
+        return "confirm";
+    }
+
+    @RequestMapping(value="confirm/{id}" , method=RequestMethod.POST)
+    public String processStatus(Model model, @PathVariable int id, @RequestParam int aysure){
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+        if (aysure > 1 || aysure < 0){
+            return "redirect:/work/confirm/" + id;
+        }
+        else if (aysure == 1){
+            workRequestDao.delete(id);
+            return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
+        }
+        else{
+            return "redirect:/work/confirm/" + id;
+        }
     }
 
 }

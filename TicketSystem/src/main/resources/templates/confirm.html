@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<table class="table table-bordered">
+    <tr>
+        <td>Computer Type</td><td>Operating System</td><td>Serial Number</td><td>Problem</td><td>Status</td><td>User Email</td>
+    </tr>
+    <tr>
+        <td th:text="${workRequest.getTypeOfComputer()}"></td>
+        <td th:text="${workRequest.getOpSys()}"></td>
+        <td th:text="${workRequest.getSerialNumber()}"></td>
+        <td th:text="${workRequest.getProblem()}"></td>
+        <td th:text="${workRequest.getStatus()}"></td>
+        <td th:text="${workRequest.getUserEmail()}"></td>
+    </tr>
+</table>
+<form method="post" class="form-group col-4">
+    <h3>Are you sure this job was completed?</h3>
+    <label for="sureyes">Yes</label>
+    <input type="radio" class="form-control" id="sureyes" name="aysure" value="1"/>
+    <label for="sureno">No</label>
+    <input id="sureno" type="radio" class="form-control" name="aysure" value="0"/>
+    <input class="form-control" type="submit" value="Confirm"/>
+</form>
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>

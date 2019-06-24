@@ -22,7 +22,7 @@
         <td th:text="${workRequest.getProblem()}"></td>
         <td th:text="${workRequest.getUserEmail()}"></td>
         <td th:text="${workRequest.getStatus()}"></td>
-        <td th:if="${workRequest.getStatus().equals(poop)}"><a href="/work">Accept?</a></td>
+        <td th:if="${workRequest.getStatus().equals(poop)}"><a th:href="'/work/confirm/' + ${workRequest.getId()}">Accept?</a></td>
     </tr>
 </table>
 
