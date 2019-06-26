@@ -29,6 +29,19 @@ public class WorkRequestController {
     @Autowired
     WorkRequestDao workRequestDao;
 
+    public static void checkAuth(Model model, UserDao userDao){
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+        if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0){
+            model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
+            model.addAttribute("foo" , true);
+        }
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+            model.addAttribute("bar", true);
+        }
+    }
+
     @RequestMapping(value="")
     @RolesAllowed({"ROLE_USER" , "ROLE_KING"})
     public String viewMakeRequests(Model model){
@@ -49,6 +62,7 @@ public class WorkRequestController {
                 }
             }
         }
+        model.addAttribute("page", 3);
         return "request-form";
     }
 
@@ -60,19 +74,16 @@ public class WorkRequestController {
                 .getAuthentication();
         if(errors.hasErrors()){
             if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0) {
+                checkAuth(model, userDao);
                 workRequest.setUserEmail(auth.getPrincipal().toString());
-                model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
                 workRequest.setStatus(Status.NEW);
                 model.addAttribute("workRequest", workRequest);
-                model.addAttribute("foo" , true);
             }
             model.addAttribute(workRequest);
+            model.addAttribute("page", 3);
             return "request-form";
         }
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
-            model.addAttribute("bar", true);
-        }
-        model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
+        checkAuth(model, userDao);
         userDao.findByEmail(auth.getPrincipal().toString()).get(0).addWorkRequest(workRequest);
         workRequestDao.save(workRequest);
 
@@ -82,68 +93,81 @@ public class WorkRequestController {
     @RequestMapping(value="view/{id}")
     @RolesAllowed({"ROLE_USER", "ROLE_KING"})
     public String viewRequest(Model model, @PathVariable int id){
+        checkAuth(model, userDao);
         Authentication auth = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
-        if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0){
-            if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
-                model.addAttribute("bar", true);
-            }
-            model.addAttribute("foo" , true);
-            model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
+        WorkRequest wr = workRequestDao.findOne(id);
+        if(wr.getStatus().equals(Status.COMPLETED) && wr.getUserEmail().equals(auth.getPrincipal().toString())){
+            return "redirect:/work/confirm/" + id;
+        }
+        else if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))){
+            return "redirect:/work/change-status/" + id;
         }
         model.addAttribute("workRequest", workRequestDao.findOne(id));
+        model.addAttribute("page", 4);
         return "view-request";
     }
 
     @RequestMapping(value="view-all/{id}")
     @RolesAllowed("ROLE_USER")
     public String viewMyRequests(Model model, @PathVariable int id) {
+        checkAuth(model , userDao);
         Authentication auth = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
-        if (auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
-            model.addAttribute("bar", true);
+        if(!(userDao.findOne(id).getEmail().equals(auth.getPrincipal().toString()))) {
+            if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0)
+                return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
+            return "redirect:/";
         }
-        if (userDao.findOne(id).getEmail().equals(auth.getPrincipal().toString())){
-            model.addAttribute("poop", Status.COMPLETED);
-            model.addAttribute("foo", true);
-            model.addAttribute("user", userDao.findOne(id));
-            return "view-my-requests";
-        }
-        return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
+        model.addAttribute("page", 4);
+        return "view-my-requests";
     }
 
     @RequestMapping(value="view-all-requests")
     @RolesAllowed("ROLE_KING")
     public String viewAllRequests(Model model){
+        checkAuth(model ,userDao);
         Authentication auth = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
-        if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0){
-            model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
-            model.addAttribute("foo" , true);
-        }
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
-            model.addAttribute("bar", true);
+        if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
+            return "redirect:/";
         }
         model.addAttribute("users" , userDao);
         model.addAttribute("requests", workRequestDao.findAll());
+        model.addAttribute("page", 5);
         return "view-all-requests";
     }
 
     @RequestMapping(value="change-status/{id}")
     @RolesAllowed("ROLE_KING")
     public String viewChangeStatus(Model model, @PathVariable int id){
+        checkAuth(model , userDao);
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+        if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
+            return "redirect:/";
+        }
         WorkRequest wr = workRequestDao.findOne(id);
         model.addAttribute("wr",wr);
         model.addAttribute("statuss", Status.values());
+        model.addAttribute("page", 5);
         return "change-status";
     }
 
     @RequestMapping(value="change-status/{id}" , method=RequestMethod.POST)
     @RolesAllowed("ROLE_KING")
     public String changeStatus(Model model, @PathVariable int id, @RequestParam Status status) {
+        checkAuth(model, userDao);
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+        if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
+            return "redirect:/";
+        }
         WorkRequest wr = workRequestDao.findOne(id);
         wr.setStatus(status);
 
@@ -153,24 +177,30 @@ public class WorkRequestController {
 
     @RequestMapping(value="confirm/{id}")
     public String confirmStatus(Model model, @PathVariable int id){
+        checkAuth(model, userDao);
         model.addAttribute("workRequest", workRequestDao.findOne(id));
+        model.addAttribute("page", 4);
         return "confirm";
     }
 
     @RequestMapping(value="confirm/{id}" , method=RequestMethod.POST)
-    public String processStatus(Model model, @PathVariable int id, @RequestParam int aysure){
+    public String processStatus(Model model, @PathVariable int id, @RequestParam String aysure){
         Authentication auth = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
-        if (aysure > 1 || aysure < 0){
-            return "redirect:/work/confirm/" + id;
-        }
-        else if (aysure == 1){
+        checkAuth(model, userDao);
+        if (aysure.equals("yes")){
             workRequestDao.delete(id);
             return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
         }
+        else if(aysure.equals("no")){
+            WorkRequest wr = workRequestDao.findOne(id);
+            wr.setStatus(Status.IN_PROGRESS);
+            workRequestDao.save(wr);
+            return "redirect:/work/view/" + id;
+        }
         else{
-            return "redirect:/work/confirm/" + id;
+            return "HALP";
         }
     }
 

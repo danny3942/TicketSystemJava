@@ -5,7 +5,7 @@
 
 <div th:replace="fragments::page-header"></div>
 
-<table class="table table-bordered">
+<table class="table table-bordered col-md-8 table-hover container">
     <tr>
         <td>Computer Type</td><td>Operating System</td><td>Serial Number</td><td>Problem</td><td>Status</td><td>User Email</td>
     </tr>
@@ -18,12 +18,13 @@
         <td th:text="${wr.getUserEmail()}"></td>
     </tr>
 </table>
-    <form method="post" class="form-group">
+<div class="container text-center"><h3>Description</h3><p th:text="${wr.getDescription()}"></p></div>
+    <form method="post" class="form-group container col-md-3">
         <label for="status"></label>
-        <select class="form-control col-3" id="status" name="status">
+        <select class="form-control" id="status" name="status">
             <option th:text="${status}" th:value="${status}" th:each="status : ${statuss}"></option>
         </select>
-        <input class="form-control col-3" type="submit" value="Change Status"/>
+        <input class="form-control" type="submit" value="Change Status"/>
     </form>
 
 <div th:replace="fragments::js-footer"></div>

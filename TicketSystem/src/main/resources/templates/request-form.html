@@ -20,6 +20,7 @@
                 <td><label th:for="*{serialNumber}">Serial Number</label></td>
                 <td>
                     <input class="form-control" th:field="*{serialNumber}" type="text" placeholder="0X0X000000XX00"/>
+                    <span class="error" th:errors="*{serialNumber}"></span>
                 </td>
             </tr>
             <tr>

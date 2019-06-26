@@ -38,6 +38,7 @@ public class WelcomeLoginController {
                 }
             }
         }
+        model.addAttribute("page", 0);
         return "index";
     }
 
@@ -50,6 +51,7 @@ public class WelcomeLoginController {
     @RequestMapping(value="login")
     public String loginView(Model model){
         model.addAttribute("title", "Moses Computer Repair");
+        model.addAttribute("page", 2);
         return "login";
     }
 
@@ -65,9 +67,11 @@ public class WelcomeLoginController {
             }
             model.addAttribute("foo" , true);
             model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
+            model.addAttribute("page", 0);
             return "index";
         }
         model.addAttribute("email", email);
+        model.addAttribute("page", 2);
         return "login";
     }
 
@@ -76,6 +80,7 @@ public class WelcomeLoginController {
     public String signupView(Model model){
         model.addAttribute("title", "Moses Computer Repair");
         model.addAttribute(new User());
+        model.addAttribute("page", 1);
         return "signup";
     }
 
@@ -85,6 +90,7 @@ public class WelcomeLoginController {
         model.addAttribute("title", "Moses Computer Repair");
         if(errors.hasErrors()) {
             model.addAttribute(user);
+            model.addAttribute("page", 1);
             return "signup";
         }
         else{

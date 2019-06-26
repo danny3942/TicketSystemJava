@@ -1,19 +1,20 @@
 package org.mcrepair.TicketSystem.models;
 
 import org.hibernate.validator.constraints.Email;
+import org.mcrepair.TicketSystem.data.WorkRequestDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+@Component
 @Entity
 public class WorkRequest {
 
-    @NotNull
-    @Size(min=8)
+    @NotNull(message="There is already a request for this computer")
+    @Size(min=8 , message="Invalid serial number")
     private String serialNumber;
 
     @Id
@@ -39,7 +40,11 @@ public class WorkRequest {
     @NotNull
     private String problem;
 
+    @NotNull
     private String description;
+
+    @Transient
+    private static WorkRequestDao workRequestDao;
 
     public WorkRequest() {
     }
@@ -84,11 +89,22 @@ public class WorkRequest {
     }
 
     public void setSerialNumber(String serialNumber) {
+        for(WorkRequest wr : workRequestDao.findAll()){
+           if(wr.getSerialNumber().equals(serialNumber)){
+                this.serialNumber = null;
+                return;
+           }
+        }
         this.serialNumber = serialNumber;
     }
 
     public int getId() {
         return id;
+    }
+
+    @Autowired
+    public void setWorkRequestDao(WorkRequestDao workRequestDao1) {
+        workRequestDao = workRequestDao1;
     }
 
     public String getTypeOfComputer() {

@@ -2,7 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org/">
 
 <head th:fragment="head">
-
+    <style>
+        body{
+            -webkit-background-image: url("http://www.pptbackgrounds.org/uploads/computer-repair-powerpoint-templates.jpg");
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjPM3KM3pZ_Xncn7JufSwsL03TUTr8nQrhuRuItHrZsixug3RCzA");
+        }
+        .error{
+            color: red;
+            font-style: italic;
+        }
+    </style>
     <!-- Bootstrap stylesheets and script -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
     <meta charset="UTF-8"/>
@@ -12,22 +21,31 @@
 <body>
 
 <div th:fragment="page-header">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#"><img class="img-responsive" src="https://mosescomputerrepair.yolasite.com/resources/logo.jpg" height="100px" width="100px"/></a>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#"><img class="img-responsive" src="https://mosescomputerrepair.yolasite.com/resources/logo.jpg" height="75px" width="75px"/></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li th:if="${page == 0}" class="nav-item active">
                     <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item">
-                    <a th:unless="${foo}" class="nav-link" href="/signup">Signup</a>
+                <li th:unless="${page == 0}" class="nav-item">
+                    <a class="nav-link" href="/">Home<span class="sr-only">(current)</span></a>
                 </li>
-                <li class="nav-item">
-                    <a th:unless="${foo}" class="nav-link" href="/login">Login</a>
+                <li th:if="${page == 1}" class="nav-item active">
+                    <a th:unless="${foo}" class="nav-link" href="/signup">Signup<span class="sr-only">(current)</span></a>
+                </li>
+                <li th:unless="${page == 1}" class="nav-item">
+                    <a th:unless="${foo}" class="nav-link" href="/signup">Signup<span class="sr-only">(current)</span></a>
+                </li>
+                <li th:if="${page == 2}" class="nav-item active">
+                    <a th:unless="${foo}" class="nav-link" href="/login">Login<span  class="sr-only">(current)</span></a>
+                </li>
+                <li th:unless="${page == 2}" class="nav-item">
+                    <a th:unless="${foo}" class="nav-link" href="/login">Login<span  class="sr-only">(current)</span></a>
                 </li>
                 <!--<li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -46,14 +64,23 @@
                 <li th:if="${foo}" class="nav-item">
                     <a class="nav-link" href="/logout">Logout</a>
                 </li>
-                <li th:if="${foo}" class="nav-item">
-                    <a class="nav-link" th:href="'/work/view-all/' + ${user.getId()}">My Work Requests</a>
+                <li th:if="${page == 4 and foo}"  class="nav-item active">
+                    <a class="nav-link" th:href="'/work/view-all/' + ${user.getId()}">My Work Requests<span class="sr-only">(current)</span></a>
                 </li>
-                <li th:if="${foo}" class="nav-item">
-                    <a class="nav-link" href="/work">Work Request</a>
+                <li th:unless="${page == 4} or not ${foo}"  class="nav-item">
+                    <a class="nav-link" th:href="'/work/view-all/' + ${user.getId()}">My Work Requests<span class="sr-only">(current)</span></a>
                 </li>
-                <li th:if="${bar}" class="nav-item">
-                    <a class="nav-link" href="/work/view-all-requests">Work Requests</a>
+                <li th:if="${page == 3 and foo}" class="nav-item active">
+                    <a class="nav-link" href="/work">Work Request<span class="sr-only">(current)</span></a>
+                </li>
+                <li th:unless="${page == 3} or not ${foo}" class="nav-item">
+                    <a class="nav-link" href="/work">Work Request<span class="sr-only">(current)</span></a>
+                </li>
+                <li th:if="${page==5 and bar}" class="nav-item active">
+                    <a class="nav-link" href="/work/view-all-requests">Work Requests<span class="sr-only">(current)</span></a>
+                </li>
+                <li th:if="${bar} and ${page!=5}" class="nav-item">
+                    <a class="nav-link" href="/work/view-all-requests">Work Requests<span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </div>

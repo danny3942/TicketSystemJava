@@ -6,6 +6,5 @@ public enum Status {
     UN_SCHEDULED,
     SCHEDULED,
     IN_PROGRESS,
-    COMPLETED,
-    DONE;
+    COMPLETED
 }

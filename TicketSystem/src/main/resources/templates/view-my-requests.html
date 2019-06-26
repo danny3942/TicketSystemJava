@@ -5,7 +5,7 @@
 
 <div th:replace="fragments::page-header"></div>
 
-<table class="table table-bordered">
+<table class="table table-bordered col-md-8 table-hover container">
     <tr>
     <td>Computer Type</td>
         <td>Operating System</td>
@@ -13,16 +13,14 @@
         <td>Problem</td>
         <td>User Email</td>
         <td>Status</td>
-        <td th:if="${user.anyCompleted()}">Action</td>
     </tr>
     <tr th:each="workRequest : ${user.getWorkRequests()}">
         <td th:text="${workRequest.getTypeOfComputer()}"></td>
         <td th:text="${workRequest.getOpSys()}"></td>
-        <td th:text="${workRequest.getSerialNumber()}"></td>
+        <td><a th:text="${workRequest.getSerialNumber()}" th:href="'/work/view/' + ${workRequest.getId()}"></a></td>
         <td th:text="${workRequest.getProblem()}"></td>
         <td th:text="${workRequest.getUserEmail()}"></td>
         <td th:text="${workRequest.getStatus()}"></td>
-        <td th:if="${workRequest.getStatus().equals(poop)}"><a th:href="'/work/confirm/' + ${workRequest.getId()}">Accept?</a></td>
     </tr>
 </table>
 
