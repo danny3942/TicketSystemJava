@@ -17,8 +17,14 @@ import java.util.List;
 @Component
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    @Autowired
-    UserDao userDao;
+
+
+    private UserDao userDao;
+
+    public CustomAuthenticationProvider(UserDao userDao){
+        this.userDao = userDao;
+    }
+
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -30,17 +36,18 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         String password = credentials.toString();
 
-        if (name.equals("matthew") && password.equals("megaman12")) {
-            List<GrantedAuthority> grants = new ArrayList<>();
-            grants.add(new SimpleGrantedAuthority("ROLE_KING"));
-            Authentication newAuth = new UsernamePasswordAuthenticationToken(name, password, grants);
-            return newAuth;
+        List<User> myList =  userDao.findByEmail(name);
+        if(myList.size() == 0){
+            return null;
         }
-
-        for (User user : userDao.findAll()){
-            if(user.getEmail().equals(name) && user.checkPasswordHash(password)){
+        else{
+            User user = myList.get(0);
+            if(user.checkPasswordHash(password)){
                 List<GrantedAuthority> grants = new ArrayList<>();
                 grants.add(new SimpleGrantedAuthority("ROLE_USER"));
+                if (user.getEmail().equals("mattmoses@gmail.com")) {
+                    grants.add(new SimpleGrantedAuthority("ROLE_KING"));
+                }
                 Authentication newAuth = new UsernamePasswordAuthenticationToken(name, password, grants);
                 return newAuth;
             }
@@ -48,6 +55,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         return null;
     }
+
 
     @Override
     public boolean supports(Class<?> authentication) {

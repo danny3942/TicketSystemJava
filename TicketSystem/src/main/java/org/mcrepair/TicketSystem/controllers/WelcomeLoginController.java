@@ -1,10 +1,11 @@
 package org.mcrepair.TicketSystem.controllers;
 
-import org.mcrepair.TicketSystem.config.CustomAuthenticationProvider;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.mcrepair.TicketSystem.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
-import java.security.NoSuchAlgorithmException;
 
 @Controller
 public class WelcomeLoginController {
@@ -26,12 +26,32 @@ public class WelcomeLoginController {
     @RequestMapping(value="")
     public String index(Model model){
         model.addAttribute("title", "Moses Computer Repair");
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+        if(auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)){
+            if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0){
+                model.addAttribute("foo", true);
+                model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
+                if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+                    model.addAttribute("bar", true);
+                }
+            }
+        }
+        model.addAttribute("page", 0);
         return "index";
+    }
+
+    @RequestMapping("logout")
+    public String logoutHandler() {
+        SecurityContextHolder.clearContext();
+        return "redirect:/";
     }
 
     @RequestMapping(value="login")
     public String loginView(Model model){
         model.addAttribute("title", "Moses Computer Repair");
+        model.addAttribute("page", 2);
         return "login";
     }
 
@@ -42,9 +62,16 @@ public class WelcomeLoginController {
                 .getContext()
                 .getAuthentication();
         if(auth.isAuthenticated()){
+            if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+                model.addAttribute("bar", true);
+            }
+            model.addAttribute("foo" , true);
+            model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
+            model.addAttribute("page", 0);
             return "index";
         }
         model.addAttribute("email", email);
+        model.addAttribute("page", 2);
         return "login";
     }
 
@@ -53,6 +80,7 @@ public class WelcomeLoginController {
     public String signupView(Model model){
         model.addAttribute("title", "Moses Computer Repair");
         model.addAttribute(new User());
+        model.addAttribute("page", 1);
         return "signup";
     }
 
@@ -62,11 +90,12 @@ public class WelcomeLoginController {
         model.addAttribute("title", "Moses Computer Repair");
         if(errors.hasErrors()) {
             model.addAttribute(user);
+            model.addAttribute("page", 1);
             return "signup";
         }
         else{
             userDao.save(user);
-            return "index";
+            return "redirect:";
         }
     }
 

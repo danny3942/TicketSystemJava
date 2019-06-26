@@ -1,17 +1,18 @@
 package org.mcrepair.TicketSystem.models;
 
+import org.hibernate.jdbc.Work;
 import org.hibernate.validator.constraints.Email;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 public class User {
 
+    @Transient
+    private static BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @NotNull
     @Email
@@ -24,11 +25,28 @@ public class User {
     @NotNull
     private String passwordHash;
 
+    @OneToMany
+    @JoinColumn(name = "workRequest_id")
+    private List<WorkRequest> workRequests;
+
     @Id
     @GeneratedValue
     private int id;
 
     public User(){
+    }
+
+    public boolean anyCompleted(){
+        for(WorkRequest wr : workRequests) {
+            if(wr.getStatus().equals(Status.COMPLETED)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addWorkRequest(WorkRequest wr){
+        workRequests.add(wr);
     }
 
     public String getEmail() {
@@ -48,16 +66,22 @@ public class User {
     }
 
     public boolean checkPasswordHash(String passwordAttempt){
-        return (hashPassword(passwordAttempt).equals(passwordHash));
+        return passwordEncoder.matches(passwordAttempt,passwordHash);
     }
-
     private String hashPassword(String password){
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.encode(password);
     }
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public List<WorkRequest> getWorkRequests() {
+        return workRequests;
+    }
+
+    public void setWorkRequests(List<WorkRequest> workRequests) {
+        this.workRequests = workRequests;
     }
 
     public void setPasswordHash(String password) {

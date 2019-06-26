@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<div class="container">
+    <form method="post" class="form-group" th:object="${workRequest}">
+        <table>
+            <tr>
+                <td><label th:for="*{typeOfComputer}">Type of Computer</label></td>
+                <td>
+                    <select th:field="*{typeOfComputer}" class="form-control">
+                        <option value="laptop">Laptop</option>
+                        <option value="desktop">Desktop</option>
+                    </select>
+                    <span th:errors="*{typeOfComputer}"></span>
+                </td>
+                <td><label th:for="*{serialNumber}">Serial Number</label></td>
+                <td>
+                    <input class="form-control" th:field="*{serialNumber}" type="text" placeholder="0X0X000000XX00"/>
+                    <span class="error" th:errors="*{serialNumber}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td><label th:for="*{opSys}">Operating System</label></td>
+                <td>
+                    <select th:field="*{opSys}" class="form-control">
+                        <option value="linux">Linux</option>
+                        <option value="windows">Windows</option>
+                        <option value="mac">Mac</option>
+                    </select>
+                </td>
+                <td><label th:for="*{problem}">Common Problems</label></td>
+                <td>
+                    <select class="form-control" th:field="*{problem}">
+                        <option value="display">Display</option>
+                        <option value="periph">Keyboard/Mouse(Peripherals)</option>
+                        <option value="software">Software/Virus/Bloatware</option>
+                        <option value="charging">Charging</option>
+                        <option value="other">Other</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label th:for="*{description}">Brief Description of Problem</label></td>
+                <td>
+                    <textarea th:field="*{description}">
+                    </textarea>
+                </td>
+                <span th:errors="*{description}"></span>
+                <td><input hidden="hidden" th:field="*{status}"/></td>
+                <td><input hidden="hidden" th:field="*{userEmail}"/></td>
+                <td><input type="submit" value="Place Request"/></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>
