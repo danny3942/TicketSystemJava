@@ -7,7 +7,13 @@
 
 <table class="table table-bordered col-md-8 table-hover container">
     <tr>
-        <td>Computer Type</td><td>Operating System</td><td>Serial Number</td><td>Problem</td><td>Status</td><td>User Email</td>
+        <td>Computer Type</td>
+        <td>Operating System</td>
+        <td>Serial Number</td>
+        <td>Problem</td>
+        <td>Status</td>
+        <td>User Email</td>
+        <td th:if="${workRequest.isScheduled()}">Appointment</td>
     </tr>
     <tr>
         <td th:text="${workRequest.getTypeOfComputer()}"></td>
@@ -16,6 +22,7 @@
         <td th:text="${workRequest.getProblem()}"></td>
         <td th:text="${workRequest.getStatus()}"></td>
         <td th:text="${workRequest.getUserEmail()}"></td>
+        <td th:if="${workRequest.isScheduled()}" th:text="${workRequest.getAppointment().getTime()}"></td>
     </tr>
 </table>
 <div class="container text-center"><h3>Description</h3><p th:text="${workRequest.getDescription()}"></p></div>

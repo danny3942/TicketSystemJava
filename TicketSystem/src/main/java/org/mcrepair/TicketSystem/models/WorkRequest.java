@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 @Component
 @Entity
@@ -26,6 +28,8 @@ public class WorkRequest {
 
     @ManyToOne
     private User user;
+
+    private GregorianCalendar appointment;
 
     @NotNull
     private Status status;
@@ -49,7 +53,7 @@ public class WorkRequest {
     public WorkRequest() {
     }
 
-    public WorkRequest(String serialNumber, String typeOfComputer, User user, Status status, String userEmail, String opSys, String problem, String description) {
+    public WorkRequest(String serialNumber, GregorianCalendar appointment, String typeOfComputer, User user, Status status, String userEmail, String opSys, String problem, String description) {
         this.serialNumber = serialNumber;
         this.typeOfComputer = typeOfComputer;
         this.user = user;
@@ -58,6 +62,19 @@ public class WorkRequest {
         this.opSys = opSys;
         this.problem = problem;
         this.description = description;
+        this.appointment = appointment;
+    }
+
+    public boolean isScheduled(){
+        return (status.equals(Status.SCHEDULED) || status.equals(Status.IN_PROGRESS));
+    }
+
+    public Calendar getAppointment() {
+        return appointment;
+    }
+
+    public void setAppointment(GregorianCalendar appointment) {
+        this.appointment = appointment;
     }
 
     public User getUser() {

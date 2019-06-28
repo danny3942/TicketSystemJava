@@ -13,19 +13,28 @@
         <td>Problem</td>
         <td>Status</td>
         <td>User Email</td>
-        <td>Appointment</td>
+        <td th:if="${workRequest.isScheduled()}">Appointment</td>
     </tr>
-    <tr th:each="workRequest : ${requests}">
+    <tr>
         <td th:text="${workRequest.getTypeOfComputer()}"></td>
         <td th:text="${workRequest.getOpSys()}"></td>
-        <td><a th:text="${workRequest.getSerialNumber()}" th:href="'view/' + ${workRequest.getId()}"></a></td>
+        <td th:text="${workRequest.getSerialNumber()}"></td>
         <td th:text="${workRequest.getProblem()}"></td>
-        <td><a th:text="${workRequest.getStatus()}" th:href="'/change-status/' + ${workRequest.getId()}"></a></td>
-        <td><a th:text="${workRequest.getUserEmail()}"
-               th:href="'view-all/' + ${users.findByEmail(workRequest.getUserEmail()).get(0).getId()}"></a></td>
+        <td th:text="${workRequest.getStatus()}"></td>
+        <td th:text="${workRequest.getUserEmail()}"></td>
         <td th:if="${workRequest.isScheduled()}" th:text="${workRequest.getAppointment().getTime()}"></td>
     </tr>
 </table>
+<div class="container text-center"><h3>Description</h3><p th:text="${workRequest.getDescription()}"></p></div>
+
+<form method="post" class="form-group col-4 container">
+    <h3>Does this time work for you?</h3>
+    <label for="sureyes">Yes</label>
+    <input type="radio" class="form-control" id="sureyes" name="aysure" value="yes"/>
+    <label for="sureno">No</label>
+    <input id="sureno" type="radio" class="form-control" name="aysure" value="no"/>
+    <input class="form-control" type="submit" value="Confirm"/>
+</form>
 
 <div th:replace="fragments::js-footer"></div>
 
