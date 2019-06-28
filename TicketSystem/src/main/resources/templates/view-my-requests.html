@@ -13,6 +13,7 @@
         <td>Problem</td>
         <td>User Email</td>
         <td>Status</td>
+        <td th:if="${user.anyScheduled()}">Appointment</td>
     </tr>
     <tr th:each="workRequest : ${user.getWorkRequests()}">
         <td th:text="${workRequest.getTypeOfComputer()}"></td>
@@ -21,6 +22,7 @@
         <td th:text="${workRequest.getProblem()}"></td>
         <td th:text="${workRequest.getUserEmail()}"></td>
         <td th:text="${workRequest.getStatus()}"></td>
+        <td th:if="${workRequest.isScheduled()}" th:text="${workRequest.getAppointment().getTime()}"></td>
     </tr>
 </table>
 

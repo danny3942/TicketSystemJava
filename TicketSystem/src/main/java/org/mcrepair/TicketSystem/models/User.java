@@ -6,6 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,6 +35,15 @@ public class User {
     private int id;
 
     public User(){
+    }
+
+    public boolean anyScheduled(){
+        for(WorkRequest wr : workRequests) {
+            if(wr.isScheduled()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean anyCompleted(){

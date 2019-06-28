@@ -52,6 +52,9 @@
                 <span th:errors="*{description}"></span>
                 <td><input hidden="hidden" th:field="*{status}"/></td>
                 <td><input hidden="hidden" th:field="*{userEmail}"/></td>
+                <td>
+                    <input hidden="hidden" th:name="*{appointment}" th:value="*{appointment.getTime()}"/><span th:errors="*{appointment}"></span>
+                </td>
                 <td><input type="submit" value="Place Request"/></td>
             </tr>
         </table>
