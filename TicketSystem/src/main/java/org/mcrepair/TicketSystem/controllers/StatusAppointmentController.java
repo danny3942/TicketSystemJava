@@ -5,10 +5,8 @@ import org.mcrepair.TicketSystem.data.WorkRequestDao;
 import org.mcrepair.TicketSystem.models.Status;
 import org.mcrepair.TicketSystem.models.WorkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,12 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.security.RolesAllowed;
 
 import java.time.Month;
 import java.util.GregorianCalendar;
 
-import static org.mcrepair.TicketSystem.controllers.WorkRequestController.checkAuth;
+import static org.mcrepair.TicketSystem.controllers.WorkRequestController.*;
 
 @Controller
 public class StatusAppointmentController {
@@ -34,26 +31,22 @@ public class StatusAppointmentController {
 
     @RequestMapping(value="change-status/{id}")
     public String viewChangeStatus(Model model, @PathVariable int id){
-        checkAuth(model , userDao);
-        Authentication auth = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
+        Authentication auth = checkAuth(model, userDao);
         if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
             return "redirect:/";
         }
+        //TO BE DELETED
+        //AUTOMATIC STATUS CHANGES TO BE IMPLEMENTED.
         WorkRequest wr = workRequestDao.findOne(id);
         model.addAttribute("wr",wr);
         model.addAttribute("statuss", Status.values());
         model.addAttribute("page", 5);
-        return "change-status";
+        return "status/change-status";
     }
 
     @RequestMapping(value="change-status/{id}" , method= RequestMethod.POST)
     public String changeStatus(Model model, @PathVariable int id, @RequestParam Status status) {
-        checkAuth(model, userDao);
-        Authentication auth = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
+        Authentication auth = checkAuth(model, userDao);
         if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
             return "redirect:/";
         }
@@ -61,6 +54,8 @@ public class StatusAppointmentController {
         if(status.equals(Status.UN_SCHEDULED)){
             wr.setAppointment(new GregorianCalendar());
         }
+        //USED FOR TESING PURPOSES
+        //AUTOMATIC STATUS CHANGES TO BE IMPLEMENTED
         wr.setStatus(status);
 
         workRequestDao.save(wr);
@@ -69,34 +64,33 @@ public class StatusAppointmentController {
 
     @RequestMapping(value="confirm/{id}")
     public String confirmStatus(Model model, @PathVariable int id){
-        checkAuth(model, userDao);
-        Authentication auth = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
+        Authentication auth = checkAuth(model, userDao);
         if(workRequestDao.findOne(id).getUserEmail().equals(auth.getPrincipal().toString())) {
+            //Pass the specified work request
+            //Allows the user confirm if the work was completed
             model.addAttribute("workRequest", workRequestDao.findOne(id));
             model.addAttribute("page", 4);
-            return "confirm";
+            return "status/confirm";
         }
         return "redirect:/";
     }
 
     @RequestMapping(value="confirm/{id}" , method=RequestMethod.POST)
     public String processStatus(Model model, @PathVariable int id, @RequestParam String aysure){
-        Authentication auth = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-        checkAuth(model, userDao);
+        Authentication auth = checkAuth(model, userDao);
         if (aysure.equals("yes")){
-
+            //if work was completed
+            // Delete work request
             workRequestDao.delete(id);
 
             return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
         }
         else if(aysure.equals("no")){
+            //if confirmation fails
+            // change status back to scheduled
             WorkRequest wr = workRequestDao.findOne(id);
-            wr.setStatus(Status.IN_PROGRESS);
-            workRequestDao.save(wr);
+            wr.setStatus(Status.SCHEDULED);
+            checkStatus(workRequestDao);
             return "redirect:/work/view/" + id;
         }
         else{
@@ -106,68 +100,52 @@ public class StatusAppointmentController {
 
     @RequestMapping(value="appointment/{id}")
     public String viewAppointment(Model model, @PathVariable int id){
-        checkAuth(model, userDao);
-        Authentication auth = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+        Authentication auth = checkAuth(model, userDao);
+        //get available times.
+            model.addAttribute("times",getAvailableTimes());
+            //pass workrequest dao
             model.addAttribute("workRequest", workRequestDao.findOne(id));
-            model.addAttribute("months", Month.values());
-            model.addAttribute(new GregorianCalendar());
-            return "appointment-form";
-        }
-        return "redirect:/";
+        return "status/appointment-form";
     }
 
     @RequestMapping(value="appointment/{id}" , method=RequestMethod.POST)
-    public String processAppointment(Model model, @PathVariable int id, @RequestParam int month,
-                                     @RequestParam int year, @RequestParam int day, @RequestParam int hour, @RequestParam int minute){
-        Authentication auth = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-        checkAuth(model, userDao);
+    public String processAppointment(Model model, @PathVariable int id, @RequestParam int time){
+        Authentication auth = checkAuth(model, userDao);
         if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0) {
-            if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
-                WorkRequest wr = workRequestDao.findOne(id);
-                wr.setStatus(Status.SCHEDULED);
-                wr.setAppointment(new GregorianCalendar(year, (month - 1), day, hour, minute));
-                workRequestDao.save(wr);
-                return "redirect:/work/view-all-requests";
-            }
-            else{
-                return "redirect:/";
-            }
+            WorkRequest wr = workRequestDao.findOne(id);
+            wr.setStatus(Status.SCHEDULED);
+            //set status to scheduled and pull the specified time out of the list.
+            wr.setAppointment(getAvailableTimes().get(time));
+            removeAvailableTime(getAvailableTimes().get(time));
+            //update
+            workRequestDao.save(wr);
+            return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
         }
         else{
             return "redirect:/login";
         }
     }
 
-    @RequestMapping(value="confirm-appointment/{id}")
-    public String concreteAppointment(Model model, @PathVariable int id){
-        checkAuth(model , userDao);
-        model.addAttribute("workRequest",workRequestDao.findOne(id));
-        return "confirm-appointment";
+    @RequestMapping(value="time-set")
+    public String setTimes(Model model){
+        Authentication auth = checkAuth(model, userDao);
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+            //Allows admins to specify when they are available to take appointments.
+            model.addAttribute("months", Month.values());
+            return "status/time-set";
+        }
+        else{return "redirect:/";}
     }
 
-    @RequestMapping(value="confirm-appointment/{id}" , method=RequestMethod.POST)
-    public String confirmAppointment(Model model, @PathVariable int id, @RequestParam String aysure){
-        checkAuth(model, userDao);
-        WorkRequest wr = workRequestDao.findOne(id);
-        if(aysure.equals("yes")){
-            wr.setStatus(Status.IN_PROGRESS);
-            workRequestDao.save(wr);
-            return "redirect:/work/view/" + id;
+    @RequestMapping(value="time-set", method=RequestMethod.POST)
+    public String setTimesBoi(Model model, @RequestParam int day, @RequestParam int month,
+                              @RequestParam int day1, @RequestParam int month1){
+        Authentication auth = checkAuth(model, userDao);
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))){
+            //generates available appointment times based on the times they have specified
+            generateAvailableTimes(day, day1, month, month1);
+            return "redirect:/work/view-all-requests";
         }
-        else if (aysure.equals("no")){
-            wr.setStatus(Status.UN_SCHEDULED);
-            wr.setAppointment(new GregorianCalendar());
-            workRequestDao.save(wr);
-            return "redirect:/work/view/" + id;
-        }
-        else{
-            return "redirect:/";
-        }
+        return "redirect:/";
     }
-
 }

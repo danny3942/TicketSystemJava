@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<table class="table table-bordered col-md-8 table-hover container">
+    <tr>
+        <td>Computer Type</td><td>Operating System</td><td>Serial Number</td><td>Problem</td><td>Status</td><td>User Email</td>
+    </tr>
+    <tr>
+        <td th:text="${workRequest.getTypeOfComputer()}"></td>
+        <td th:text="${workRequest.getOpSys()}"></td>
+        <td th:text="${workRequest.getSerialNumber()}"></td>
+        <td th:text="${workRequest.getProblem()}"></td>
+        <td th:text="${workRequest.getStatus()}"></td>
+        <td th:text="${workRequest.getUserEmail()}"></td>
+    </tr>
+</table>
+<div class="container text-center"><h3>Description</h3><p th:text="${workRequest.getDescription()}"></p></div>
+
+<form method="post" class="form-group">
+    <table class="table table-bordered col-md-4 table-hover container">
+        <tr th:each="time : ${times}">
+           <td th:text="${time.getTime()}"></td>
+            <td><input name="time" id="time" th:value="${times.indexOf(time)}" type="radio"/></td>
+        </tr>
+        <tr>
+            <td class="col-md-4"><input class="form-control" type="submit" value="Set appointment"/></td>
+        </tr>
+    </table>
+</form>
+
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>

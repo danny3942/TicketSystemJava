@@ -144,6 +144,27 @@ public class WorkRequest {
         return problem;
     }
 
+    public boolean isToday(){
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.add(9,1);
+        return (appointment.after(new GregorianCalendar()) && appointment.before(gc));
+    }
+
+    public boolean doesntMakeSense(){
+        if (status.equals(Status.NEW) || status.equals(Status.UN_SCHEDULED)) {
+            GregorianCalendar gc = new GregorianCalendar();
+            gc.add(9, -3);
+            return appointment.before(new GregorianCalendar());
+        }
+        return true;
+    }
+
+    public boolean isDone(){
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.add(9,-2);
+        return appointment.before(new GregorianCalendar()) && status.equals(Status.IN_PROGRESS);
+    }
+
     public void setProblem(String problem) {
         this.problem = problem;
     }
