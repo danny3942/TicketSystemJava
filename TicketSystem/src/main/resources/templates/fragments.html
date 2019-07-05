@@ -76,7 +76,7 @@
                 <li th:unless="${page == 3} or not ${foo}" class="nav-item">
                     <a class="nav-link" href="/work">Work Request<span class="sr-only">(current)</span></a>
                 </li>
-                <li th:if="${page==5 and bar}" class="nav-item active">
+                <li th:if="${page==5} and ${bar}" class="nav-item active">
                     <a class="nav-link" href="/work/view-all-requests">Work Requests<span class="sr-only">(current)</span></a>
                 </li>
                 <li th:if="${bar} and ${page!=5}" class="nav-item">

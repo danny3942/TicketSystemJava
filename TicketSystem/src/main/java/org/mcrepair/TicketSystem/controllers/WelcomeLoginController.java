@@ -3,9 +3,7 @@ package org.mcrepair.TicketSystem.controllers;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.mcrepair.TicketSystem.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 
+import static org.mcrepair.TicketSystem.controllers.WorkRequestController.checkAuth;
+
 @Controller
 public class WelcomeLoginController {
 
@@ -26,33 +26,26 @@ public class WelcomeLoginController {
     @RequestMapping(value="")
     public String index(Model model){
         model.addAttribute("title", "Moses Computer Repair");
-        Authentication auth = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-        if(auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)){
-            if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0){
-                model.addAttribute("foo", true);
-                model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
-                if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
-                    model.addAttribute("bar", true);
-                }
-            }
-        }
+        Authentication auth = checkAuth(model, userDao);
+        //HOME PAGE
+        // not too much interesting here....
         model.addAttribute("page", 0);
-        return "index";
+        return "welcome/index";
     }
 
     @RequestMapping("logout")
     public String logoutHandler() {
+        //Logout handler.... again not too much interesting here
         SecurityContextHolder.clearContext();
-        return "redirect:/";
+        return "redirect:";
     }
 
     @RequestMapping(value="login")
     public String loginView(Model model){
         model.addAttribute("title", "Moses Computer Repair");
+        //view login
         model.addAttribute("page", 2);
-        return "login";
+        return "welcome/login";
     }
 
     @RequestMapping(value="login" , method=RequestMethod.POST)
@@ -61,18 +54,15 @@ public class WelcomeLoginController {
         Authentication auth = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
+        //See if the user logged in correctly
         if(auth.isAuthenticated()){
-            if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
-                model.addAttribute("bar", true);
-            }
-            model.addAttribute("foo" , true);
-            model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
-            model.addAttribute("page", 0);
-            return "index";
+            //send them back to index.
+            return "redirect:";
         }
         model.addAttribute("email", email);
+        //refill the fields
         model.addAttribute("page", 2);
-        return "login";
+        return "welcome/login";
     }
 
 
@@ -80,8 +70,9 @@ public class WelcomeLoginController {
     public String signupView(Model model){
         model.addAttribute("title", "Moses Computer Repair");
         model.addAttribute(new User());
+        //send the model a user object to use in setting up form
         model.addAttribute("page", 1);
-        return "signup";
+        return "welcome/signup";
     }
 
     @RequestMapping(value="signup" , method=RequestMethod.POST)
@@ -90,10 +81,12 @@ public class WelcomeLoginController {
         model.addAttribute("title", "Moses Computer Repair");
         if(errors.hasErrors()) {
             model.addAttribute(user);
+            //refill fields send back errors
             model.addAttribute("page", 1);
-            return "signup";
+            return "welcome/signup";
         }
         else{
+            //save new user and redirect.
             userDao.save(user);
             return "redirect:";
         }

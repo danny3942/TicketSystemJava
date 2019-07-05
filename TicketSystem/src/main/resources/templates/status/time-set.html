@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<h3>When can you make appointments?</h3>
+
+
+<form method="post" class="form-group">
+    <table class="table table-bordered col-md-4 table-hover container">
+        <tr>
+            <td>From:</td>
+            <td><label for="month">Month</label></td>
+            <td>
+                <select id="month" name="month">
+                    <option th:each="month : ${months}" th:text="${month}" th:value="${month.value}"></option>
+                </select>
+            </td>
+            <td><label for="day">Day</label></td>
+            <td>
+                <select name="day" id="day">
+                    <option th:each="i:${#numbers.sequence(1,31)}" th:value="${i}" th:text="${i}"></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>To:</td>
+            <td><label for="month1">Month</label></td>
+            <td>
+                <select id="month1" name="month1">
+                    <option th:each="month : ${months}" th:text="${month}" th:value="${month.value}"></option>
+                </select>
+            </td>
+            <td><label for="day1">Day</label></td>
+            <td>
+                <select name="day1" id="day1">
+                    <option th:each="i:${#numbers.sequence(1,31)}" th:value="${i}" th:text="${i}"></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5" class="col-md-4"><input class="form-control" type="submit" value="Set Times"/></td>
+        </tr>
+    </table>
+</form>
+
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>
