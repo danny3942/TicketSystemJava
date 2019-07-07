@@ -3,6 +3,7 @@ package org.mcrepair.TicketSystem.controllers;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.mcrepair.TicketSystem.data.WorkRequestDao;
 import org.mcrepair.TicketSystem.models.Status;
+import org.mcrepair.TicketSystem.models.User;
 import org.mcrepair.TicketSystem.models.WorkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -57,21 +58,34 @@ public class WorkRequestController {
         }
     }
 
-    static List<GregorianCalendar> getAvailableTimes(){
+    static List<GregorianCalendar> getAvailableTimes(UserDao userDao){
+        loadAvailableTimes(userDao);
         return availableTimes;
     }
 
-    static void addAvailableTime(GregorianCalendar time){
-        availableTimes.add(time);
+    static User getUserFromTime(GregorianCalendar timeToFind, UserDao userDao){
+        for(User user: userDao.findAll()) {
+            for (GregorianCalendar appointment: user.getAvailableTimes()){
+                if(timeToFind.equals(appointment)){
+                    return user;
+                }
+            }
+        }
+        return null;
     }
 
-    static void removeAvailableTime(GregorianCalendar time){availableTimes.remove(time);}
-
-    static void setAvailableTimes(List<GregorianCalendar> times){
-        availableTimes = times;
+    static void removeAvailableTime(UserDao userDao, int timeId){
+        getUserFromTime(availableTimes.get(timeId), userDao).removeAvailableTime(availableTimes.remove(timeId));
     }
 
-    static void generateAvailableTimes(int day, int day1, int month, int month1){
+    private static void loadAvailableTimes(UserDao userDao){
+        for(int i = 1; i <= userDao.count(); i++){
+            availableTimes.addAll(userDao.findOne(i).getAvailableTimes());
+        }
+    }
+
+
+    static void generateAvailableTimes(int day, int day1, int month, int month1, int userId, UserDao userDao){
         GregorianCalendar gc = new GregorianCalendar();
         if (gc.getTime().after(new GregorianCalendar(2019,month1,day1).getTime())){
             //see if they are specifying beyond this year.
@@ -85,8 +99,8 @@ public class WorkRequestController {
                 for (int i = month; i <= month1; i++) {
                     if (i == month1)
                         day1 = temp;
-                    for (int j = day; j < day1; j++) {
-                        addAvailableTime(new GregorianCalendar(y, i - 1, j, 12, 30));
+                    for (int j = day; j <= day1; j++) {
+                        userDao.findOne(userId).addAvailableTime(new GregorianCalendar(y, i - 1, j, 12, 30));
                     }
                 }
             }
@@ -103,22 +117,22 @@ public class WorkRequestController {
                     //check to see if we hit the end of the month
                     day1 = temp;
                     //change to make it go to when specified
-                for (int j = day; j < day1; j++){
+                for (int j = day; j <= day1; j++){
                     //add new available time for each day inside the time specified
-                    addAvailableTime(new GregorianCalendar(2019, i - 1, j, 12, 30));
+                    userDao.findOne(userId).addAvailableTime(new GregorianCalendar(2019, i - 1, j, 12, 30));
                 }
             }
             return;
         }
         else if(day == day1 && month==month1){
             //if the month and day are the same then they can only add one day.
-            addAvailableTime(new GregorianCalendar(2019, month-1,day,12,30));
+            userDao.findOne(userId).addAvailableTime(new GregorianCalendar(2019, month-1,day,12,30));
             return;
         }
         for (int i = month; i <= month1; i++){
-            for (int j = day; j < day1; j++){
+            for (int j = day; j <= day1; j++){
                 //every other instance just loop through
-                addAvailableTime(new GregorianCalendar(2019, i - 1, j, 12, 30));
+                userDao.findOne(userId).addAvailableTime(new GregorianCalendar(2019, i - 1, j, 12, 30));
             }
         }
     }

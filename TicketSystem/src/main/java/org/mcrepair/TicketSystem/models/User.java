@@ -2,11 +2,15 @@ package org.mcrepair.TicketSystem.models;
 
 import org.hibernate.jdbc.Work;
 import org.hibernate.validator.constraints.Email;
+import org.mcrepair.TicketSystem.data.UserDao;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @Entity
@@ -25,6 +29,11 @@ public class User {
 
     @NotNull
     private String passwordHash;
+
+    private String role;
+
+    @ElementCollection
+    private List<GregorianCalendar> availableTimes;
 
     @OneToMany
     @JoinColumn(name = "workRequest_id")
@@ -53,6 +62,29 @@ public class User {
             }
         }
         return false;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    void setRole(Authentication auth,String role) {
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))
+            this.role = role;
+    }
+
+    public void removeAvailableTime(GregorianCalendar time){availableTimes.remove(time);}
+
+    public void addAvailableTime(GregorianCalendar time){
+        availableTimes.add(time);
+    }
+
+    public List<GregorianCalendar> getAvailableTimes() {
+        return availableTimes;
+    }
+
+    public void setAvailableTimes(List<GregorianCalendar> availableTimes) {
+        this.availableTimes = availableTimes;
     }
 
     public void addWorkRequest(WorkRequest wr){
