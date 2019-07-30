@@ -44,10 +44,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             User user = myList.get(0);
             if(user.checkPasswordHash(password)){
                 List<GrantedAuthority> grants = new ArrayList<>();
-                grants.add(new SimpleGrantedAuthority("ROLE_USER"));
-                if (user.getEmail().equals("mattmoses@gmail.com")) {
-                    grants.add(new SimpleGrantedAuthority("ROLE_KING"));
-                }
+                grants.add(new SimpleGrantedAuthority(user.getRole()));
                 Authentication newAuth = new UsernamePasswordAuthenticationToken(name, password, grants);
                 return newAuth;
             }

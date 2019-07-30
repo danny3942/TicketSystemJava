@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<table class="table table-bordered col-md-8 table-hover container">
+    <tr>
+        <td>User</td>
+        <td>Role</td>
+    </tr>
+    <tr th:each="user : ${users}">
+        <td th:text="${user.getEmail()}"></td>
+        <td><a th:href="'/change-role/' + ${user.getId()}" th:text="${user.getRole()}"></a></td>
+    </tr>
+</table>
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>

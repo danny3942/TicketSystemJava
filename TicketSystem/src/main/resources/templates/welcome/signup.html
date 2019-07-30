@@ -20,6 +20,7 @@
                 <td><label th:for="*{verify}">Re-Type Password</label></td>
                 <td><input th:field="*{verify}" type="password" class="form-control"/></td>
             </tr>
+            <input hidden="hidden" th:field="*{role}"/>
             <input type="hidden"
                    name="${_csrf.parameterName}"
                    value="${_csrf.token}"/>

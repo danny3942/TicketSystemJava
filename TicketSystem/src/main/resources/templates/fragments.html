@@ -82,6 +82,12 @@
                 <li th:if="${bar} and ${page!=5}" class="nav-item">
                     <a class="nav-link" href="/work/view-all-requests">Work Requests<span class="sr-only">(current)</span></a>
                 </li>
+                <li th:if="${page==6} and ${bar}" class="nav-item active">
+                    <a class="nav-link" href="/todos">Todo's<span class="sr-only">(current)</span></a>
+                </li>
+                <li th:if="${bar} and ${page!=6}" class="nav-item">
+                    <a class="nav-link" href="/todos">Todo's<span class="sr-only">(current)</span></a>
+                </li>
             </ul>
         </div>
     </nav>

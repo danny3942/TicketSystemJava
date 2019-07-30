@@ -87,6 +87,7 @@ public class WelcomeLoginController {
         }
         else{
             //save new user and redirect.
+            user.setRole();
             userDao.save(user);
             return "redirect:";
         }

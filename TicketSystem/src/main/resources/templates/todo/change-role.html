@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments::head"></head>
+<body>
+
+<div th:replace="fragments::page-header"></div>
+
+<table class="table table-bordered col-md-8 table-hover container">
+    <tr>
+        <td>User</td>
+        <td>Role</td>
+    </tr>
+    <tr>
+        <td th:text="${currUser.getEmail()}"></td>
+        <td th:text="${currUser.getRole()}"></td>
+    </tr>
+</table>
+<form method="post" class="form-group">
+    <table class="table table-bordered col-md-4 table-hover container">
+        <tr>
+            <td><label for="role">Select Role</label></td>
+            <td>
+                <select id="role" name="role">
+                    <option th:each="role : ${roles}" th:text="${role}" th:value="${role}"></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="col-md-4" colspan="2"><input class="form-control" type="submit" value="Set Role"/></td>
+        </tr>
+    </table>
+</form>
+
+<div th:replace="fragments::js-footer"></div>
+
+</body>
+</html>
