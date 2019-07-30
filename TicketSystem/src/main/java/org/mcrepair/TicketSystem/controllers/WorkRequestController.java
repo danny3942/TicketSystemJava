@@ -40,7 +40,8 @@ public class WorkRequestController {
             model.addAttribute("user", userDao.findByEmail(auth.getPrincipal().toString()).get(0));
             model.addAttribute("foo" , true);
         }
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))
+                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV"))) {
             //used for admin specific navigation.
             model.addAttribute("bar", true);
         }

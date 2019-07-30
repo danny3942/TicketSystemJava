@@ -3,7 +3,6 @@ package org.mcrepair.TicketSystem.controllers;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.mcrepair.TicketSystem.data.WorkRequestDao;
 import org.mcrepair.TicketSystem.models.Status;
-import org.mcrepair.TicketSystem.models.User;
 import org.mcrepair.TicketSystem.models.WorkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

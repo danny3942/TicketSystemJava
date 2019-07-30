@@ -30,6 +30,7 @@ public class User {
     @NotNull
     private String passwordHash;
 
+    @NotNull
     private String role;
 
     @ElementCollection
@@ -44,6 +45,7 @@ public class User {
     private int id;
 
     public User(){
+        this.role = "ROLE_USER";
     }
 
     public boolean anyScheduled(){
@@ -68,7 +70,12 @@ public class User {
         return role;
     }
 
-    void setRole(Authentication auth,String role) {
+    public void setRole(){
+        if(this.email.equals("mattmoses@gmail.com"))
+            this.role = "ROLE_KING";
+    }
+
+    public void setRole(Authentication auth,String role) {
         if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))
             this.role = role;
     }
