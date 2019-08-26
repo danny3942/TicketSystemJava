@@ -3,6 +3,7 @@ package org.mcrepair.TicketSystem.controllers;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.mcrepair.TicketSystem.data.WorkRequestDao;
 import org.mcrepair.TicketSystem.models.Status;
+import org.mcrepair.TicketSystem.models.User;
 import org.mcrepair.TicketSystem.models.WorkRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -113,12 +114,14 @@ public class StatusAppointmentController {
         Authentication auth = checkAuth(model, userDao);
         if(userDao.findByEmail(auth.getPrincipal().toString()).size() > 0) {
             WorkRequest wr = workRequestDao.findOne(id);
+            User user = getUserFromTime(getAvailableTimes(userDao).get(time), userDao);
             wr.setStatus(Status.SCHEDULED);
             //set status to scheduled and pull the specified time out of the list.
             wr.setAppointment(getAvailableTimes(userDao).get(time));
+            wr.setAssociate(user.getEmail());
             removeAvailableTime(userDao, time);
             //update
-            userDao.save(getUserFromTime(getAvailableTimes(userDao).get(time), userDao));
+            userDao.save(user);
             workRequestDao.save(wr);
             return "redirect:/work/view-all/" + userDao.findByEmail(auth.getPrincipal().toString()).get(0).getId();
         }
@@ -130,7 +133,9 @@ public class StatusAppointmentController {
     @RequestMapping(value="time-set/{id}")
     public String setTimes(@PathVariable int id,Model model){
         Authentication auth = checkAuth(model, userDao);
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))) {
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))
+                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV"))
+                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ASSOC"))) {
             //Allows admins to specify when they are available to take appointments.
             model.addAttribute("months", Month.values());
             return "status/time-set";
@@ -142,7 +147,9 @@ public class StatusAppointmentController {
     public String setTimesBoi(@PathVariable int id,Model model, @RequestParam int day, @RequestParam int month,
                               @RequestParam int day1, @RequestParam int month1){
         Authentication auth = checkAuth(model, userDao);
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))){
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))
+                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV"))
+                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ASSOC"))) {
             //generates available appointment times based on the times they have specified
             generateAvailableTimes(day, day1, month, month1, id, userDao);
             userDao.save(userDao.findOne(id));

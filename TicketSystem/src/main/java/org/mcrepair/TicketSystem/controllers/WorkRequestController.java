@@ -1,5 +1,6 @@
 package org.mcrepair.TicketSystem.controllers;
 
+import org.hibernate.jdbc.Work;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.mcrepair.TicketSystem.data.WorkRequestDao;
 import org.mcrepair.TicketSystem.models.Status;
@@ -29,6 +30,8 @@ public class WorkRequestController {
     @Autowired
     WorkRequestDao workRequestDao;
 
+    private static ArrayList<WorkRequest> aps = new ArrayList<>();
+
     private static List<GregorianCalendar> availableTimes = new ArrayList<>();
 
     static Authentication checkAuth(Model model, UserDao userDao){
@@ -41,7 +44,8 @@ public class WorkRequestController {
             model.addAttribute("foo" , true);
         }
         if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))
-                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV"))) {
+                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV"))
+                || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ASSOC"))) {
             //used for admin specific navigation.
             model.addAttribute("bar", true);
         }
@@ -57,6 +61,17 @@ public class WorkRequestController {
                 }
             }
         }
+    }
+
+    static ArrayList<WorkRequest> getAppointments(User asc, WorkRequestDao workRequestDao){
+        aps.clear();
+        for (WorkRequest wr: workRequestDao.findAll()){
+            if(wr.getAssociate() != null)
+                if(wr.getAssociate().equals(asc.getEmail())){
+                    aps.add(wr);
+                }
+        }
+        return aps;
     }
 
     static List<GregorianCalendar> getAvailableTimes(UserDao userDao){
@@ -80,8 +95,10 @@ public class WorkRequestController {
     }
 
     private static void loadAvailableTimes(UserDao userDao){
+        availableTimes.clear();
         for(int i = 1; i <= userDao.count(); i++){
-            availableTimes.addAll(userDao.findOne(i).getAvailableTimes());
+            for(GregorianCalendar appointment: userDao.findOne(i).getAvailableTimes())
+                availableTimes.add(appointment);
         }
     }
 
@@ -221,7 +238,8 @@ public class WorkRequestController {
     public String viewAllRequests(Model model){
         Authentication auth = checkAuth(model ,userDao);
         //Check to make sure its an admin viewing
-        if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
+        if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING"))
+            || auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV")))){
             return "redirect:/";
         }
         //pass correct attributes

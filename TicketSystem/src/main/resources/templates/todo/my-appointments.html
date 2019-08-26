@@ -7,24 +7,22 @@
 
 <table class="table table-bordered col-md-8 table-hover container">
     <tr>
-    <td>Computer Type</td>
+        <td>Computer Type</td>
         <td>Operating System</td>
         <td>Serial Number</td>
         <td>Problem</td>
-        <td>User Email</td>
         <td>Status</td>
-        <td th:if="${user.anyScheduled()}">Appointment</td>
-        <td th:if="${user.anyScheduled()}">Assigned Associate</td>
+        <td>User Email</td>
+        <td>Appointment</td>
     </tr>
-    <tr th:each="workRequest : ${user.getWorkRequests()}">
+    <tr th:each="workRequest : ${requests}">
         <td th:text="${workRequest.getTypeOfComputer()}"></td>
         <td th:text="${workRequest.getOpSys()}"></td>
-        <td><a th:text="${workRequest.getSerialNumber()}" th:href="'/work/view/' + ${workRequest.getId()}"></a></td>
+        <td><a th:text="${workRequest.getSerialNumber()}" th:href="'view/' + ${workRequest.getId()}"></a></td>
         <td th:text="${workRequest.getProblem()}"></td>
+        <td><a th:text="${workRequest.getStatus()}" th:href="'/change-status/' + ${workRequest.getId()}"></a></td>
         <td th:text="${workRequest.getUserEmail()}"></td>
-        <td th:text="${workRequest.getStatus()}"></td>
-        <td th:if="${workRequest.isScheduled()}" th:text="${workRequest.getAppointment().getTime()}"></td>
-        <td th:if="${workRequest.isScheduled()}" th:text="${workRequest.getAssociate()}"></td>
+        <td th:text="${workRequest.getAppointment().getTime()}"></td>
     </tr>
 </table>
 

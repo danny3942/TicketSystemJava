@@ -12,6 +12,9 @@
     <tr th:if="${user.getAvailableTimes().size() == 0}">
         <td>Appointment Times</td><td><a th:href="'/time-set/' + ${user.getId()}">Set Appointment Times</a></td>
     </tr>
+    <tr th:if="${weInThisBoi}">
+        <td>Your Schedule</td><td><a href="/my-appointments">View My Appointments</a></td>
+    </tr>
     <tr th:if="${bar}">
         <td>User Permissions</td><td><a href="/permiss">Update Permissions</a></td>
     </tr>

@@ -73,11 +73,25 @@ public class User {
     public void setRole(){
         if(this.email.equals("mattmoses@gmail.com"))
             this.role = "ROLE_KING";
+        else
+            role = "ROLE_USER";
+        verify = "";
     }
 
     public void setRole(Authentication auth,String role) {
-        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))
-            this.role = role;
+        if(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")) ||
+                auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV"))) {
+            if (this.email.equals("mattmoses@gmail.com")) {
+                this.role = "ROLE_KING";
+            }
+            else if (this.email.equals("danny3942.ds@gmail.com")) {
+                this.role = "ROLE_DEV";
+            }
+            else {
+                this.role = role;
+            }
+        }
+        verify = "";
     }
 
     public void removeAvailableTime(GregorianCalendar time){availableTimes.remove(time);}

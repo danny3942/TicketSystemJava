@@ -34,6 +34,8 @@ public class WorkRequest {
     @NotNull
     private Status status;
 
+    private String associate;
+
     @NotNull
     @Email
     private String userEmail;
@@ -63,6 +65,14 @@ public class WorkRequest {
         this.problem = problem;
         this.description = description;
         this.appointment = appointment;
+    }
+
+    public String getAssociate() {
+        return associate;
+    }
+
+    public void setAssociate(String associate) {
+        this.associate = associate;
     }
 
     public boolean isScheduled(){
