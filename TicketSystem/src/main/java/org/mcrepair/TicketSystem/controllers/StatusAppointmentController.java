@@ -36,8 +36,7 @@ public class StatusAppointmentController {
         if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
             return "redirect:/";
         }
-        //TO BE DELETED
-        //AUTOMATIC STATUS CHANGES TO BE IMPLEMENTED.
+        //Setting the Status
         WorkRequest wr = workRequestDao.findOne(id);
         model.addAttribute("wr",wr);
         model.addAttribute("statuss", Status.values());
@@ -51,12 +50,11 @@ public class StatusAppointmentController {
         if(!(auth.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_KING")))){
             return "redirect:/";
         }
+        //Saving the Status
         WorkRequest wr = workRequestDao.findOne(id);
         if(status.equals(Status.UN_SCHEDULED)){
             wr.setAppointment(new GregorianCalendar());
         }
-        //USED FOR TESING PURPOSES
-        //AUTOMATIC STATUS CHANGES TO BE IMPLEMENTED
         wr.setStatus(status);
 
         workRequestDao.save(wr);
