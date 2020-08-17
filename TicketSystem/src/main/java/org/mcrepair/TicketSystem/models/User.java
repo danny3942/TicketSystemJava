@@ -1,6 +1,5 @@
 package org.mcrepair.TicketSystem.models;
 
-import org.hibernate.jdbc.Work;
 import org.hibernate.validator.constraints.Email;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.springframework.security.core.Authentication;

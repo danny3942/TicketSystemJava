@@ -1,6 +1,5 @@
 package org.mcrepair.TicketSystem.controllers;
 
-import org.hibernate.jdbc.Work;
 import org.mcrepair.TicketSystem.data.UserDao;
 import org.mcrepair.TicketSystem.data.WorkRequestDao;
 import org.mcrepair.TicketSystem.models.Status;
